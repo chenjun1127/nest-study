@@ -7,10 +7,10 @@ import { UserModule } from './user/user.module';
 @Module({
   imports: [TypeOrmModule.forRoot({
     type: 'mysql',
-    host: '1.92.96.166',
+    host: '********',
     port: 3306,
     username: 'root',
-    password: '123456',
+    password: '*****',
     database: 'test',
     entities: [User],
     synchronize: true,
