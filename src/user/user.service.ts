@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Body, Injectable, Session } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -31,7 +31,7 @@ export class UserService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     var oldUser = await this.findOne(id);
-    if (updateUserDto.name == oldUser.name) {
+    if (updateUserDto.username == oldUser.username) {
       return {
         code: 401,
         msg: '名称一样，禁止更新',

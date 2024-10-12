@@ -1,7 +1,10 @@
 export class CreateUserDto {
-  name: string;
+  username: string;
   content: string;
+  password: string;
+  email: string;
   createTime: Date;
   isActive: boolean;
   updateTime: Date;
+  roles: string[];
 }
