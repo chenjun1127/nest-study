@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthController } from './auth/auth.controller';
+import { UploadModule } from './upload/upload.module'; 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -17,6 +18,7 @@ import { AuthController } from './auth/auth.controller';
       synchronize: true,
     }),
     UserModule,
+    UploadModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService],
