@@ -1,9 +1,10 @@
-import { Body, Injectable, Session } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { FindAllUsersDto } from './dto/find-all-user.dto';
 
 @Injectable()
 export class UserService {
@@ -21,8 +22,29 @@ export class UserService {
     };
   }
 
-  findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async findAll(query: FindAllUsersDto): Promise<any> {
+    const pageSize = query.pageSize || 10; // 默认值为10
+    const pageNumber = query.pageNumber || 1; // 默认值为1
+
+    const sql: any = {
+      where: {},
+    };
+
+    // 只有在 keyword 存在时才添加条件
+    if (query.keyword) {
+      sql.where.username = Like(`%${query.keyword}%`);
+    }
+    const total = await this.userRepository.count(sql);
+
+    const data = await this.userRepository.find({
+      ...sql,
+      skip: (pageNumber - 1) * pageSize,
+      take: pageSize,
+    });
+    return {
+      total,
+      data,
+    };
   }
 
   findOne(id: string): Promise<User | null> {
