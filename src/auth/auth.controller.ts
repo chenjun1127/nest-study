@@ -1,6 +1,8 @@
-import { Controller, Get, Req, Post, Res, Session, Body } from '@nestjs/common';
+import { Controller, Get, Req, Post, Res, Session, Body, UseGuards, Query, SetMetadata } from '@nestjs/common';
 import { Request, Response } from 'express';
 import * as svgCaptcha from 'svg-captcha';
+import { AuthGuard } from './auth.guard';
+import { Role } from './role.decorator';
 @Controller('auth')
 export class AuthController {
   @Get('captcha')
@@ -35,5 +37,14 @@ export class AuthController {
         message: '验证码错误',
       }
     }
+  }
+  // 有admin权限才能访问
+  @Get('login')
+  @UseGuards(AuthGuard)
+  @SetMetadata('role', ['admin'])
+  // @Role('admin')
+  login(@Query('role') role: string) {
+    console.log(role);
+    return 'login';
   }
 }
