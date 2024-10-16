@@ -26,7 +26,6 @@ export class UserService {
     const defaultRole = await this.roleService.findByCode('1');
     // // 分配默认角色
     user.roles = [defaultRole];
-    console.log(defaultRole);
 
     // // 保存用户并返回
     const newUser = await this.userRepository.save(user);

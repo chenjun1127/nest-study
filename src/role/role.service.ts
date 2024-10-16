@@ -47,9 +47,7 @@ export class RoleService implements OnModuleInit {
     if (!role) {
       throw new NotFoundException('角色不存在');
     }
-    console.log(11,role?.user?.id);
     Object.assign(role, updateRoleDto);
-    console.log(22,role?.user?.id);
     return this.roleRepository.save(role);
   }
 }
