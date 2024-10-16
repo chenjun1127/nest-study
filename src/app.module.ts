@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthController } from './auth/auth.controller';
 import { UploadModule } from './upload/upload.module'; 
+import { RoleModule } from './role/role.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -19,6 +20,7 @@ import { UploadModule } from './upload/upload.module';
     }),
     UserModule,
     UploadModule,
+    RoleModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService],

@@ -5,20 +5,37 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { FindAllUsersDto } from './dto/find-all-user.dto';
+import { RoleService } from 'src/role/role.service';
+
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-  ) {}
+    private roleService: RoleService,
+  ) { }
   async create(createUserDto: CreateUserDto) {
-    createUserDto.createTime = createUserDto.updateTime = new Date();
-    createUserDto.isActive = false;
-    const createdUser = await this.userRepository.save(createUserDto);
+    const user = new User();
+    user.username = createUserDto.username;
+    user.email = createUserDto.email;
+    user.password = createUserDto.password; // 在实际应用中，务必对密码进行加密
+    user.content = createUserDto.content;
+    user.isActive = true; // 默认激活用户
+
+    // 获取“普通用户”角色
+    const defaultRole = await this.roleService.findByCode('1');
+    // // 分配默认角色
+    user.roles = [defaultRole];
+    console.log(defaultRole);
+
+    // // 保存用户并返回
+    const newUser = await this.userRepository.save(user);
+    // // 分配默认角色并设置关联
+    await this.roleService.update(defaultRole.roleId, defaultRole);
     return {
       code: 200,
       msg: 'success',
-      data: createdUser,
+      data: newUser,
     };
   }
 
@@ -34,6 +51,7 @@ export class UserService {
     if (query.keyword) {
       sql.where.username = Like(`%${query.keyword}%`);
     }
+
     const total = await this.userRepository.count(sql);
 
     const data = await this.userRepository.find({
@@ -41,6 +59,7 @@ export class UserService {
       skip: (pageNumber - 1) * pageSize,
       take: pageSize,
     });
+
     return {
       total,
       data,
@@ -73,5 +92,18 @@ export class UserService {
       code: 200,
       msg: '删除成功',
     };
+  }
+
+  async findUserWithRoles(userId: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles'],
+    });
+
+    if (!user) {
+      return null; // 或者抛出异常
+    }
+
+    return user;
   }
 }
